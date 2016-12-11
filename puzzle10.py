@@ -1,4 +1,7 @@
 import re
+import collections
+from functools import reduce
+import operator
 p_value = re.compile('value (\d+) goes to bot (\d+)')
 p_bot = re.compile('bot (\d+) gives low to (.+) (\d+) and high to (.+) (\d+)')
 
@@ -41,14 +44,15 @@ def find_output123(tree):
     out = []
     for k, v in tree.items():
         if (k == 'output0' or k == 'output1' or k == 'output2'):
-            out.append((k, v))
+            out.append(Output(k, v))
     return out
-
+Output = collections.namedtuple('Output', 'bin values')
 
 def multiply_output(outs):
     result = 1
     for e in outs:
-        result = result * e[1][0]
+        bin_values_mul = reduce(operator.mul, e.values, 1) 
+        result = result * bin_values_mul
     return result
 
 tree = {}
